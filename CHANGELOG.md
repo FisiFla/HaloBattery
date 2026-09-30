@@ -6,6 +6,10 @@ and the project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Hitscan Hyperlight on its 8K receiver (`3770:0300`). Uses the same vendor collection
+  (`ff02:0002`) and 17-byte command `0x04` frame as the 1K receiver.
+
 ### Changed
 - **A tidier repository and a shorter README**: the app's modules moved into the `halo/`
   package (`halo_battery.pyw` stays the entry point), the .bat helpers into `scripts/`

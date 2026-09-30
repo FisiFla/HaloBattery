@@ -14,9 +14,11 @@ applies. The keep-window tests at the end cover the reporter's later report: aft
 idle minutes his mouse deep-sleeps, the receiver goes quiet, and the reading used to
 vanish from the tray until long after the mouse was used again.
 
-The Hitscan Hyperlight (3770:0200 on its receiver, 3770:0100 on the cable, #105) is
-faked with its own collection list and the frames sopparus/hitscan-battery captured
-from the vendor application; the same rule picks its ff02:0002 collection.
+The Hitscan Hyperlight (3770:0200 on its 1K receiver, 3770:0300 on the 8K receiver,
+3770:0100 on the cable, #105) is faked with its collection lists (the 1K receiver from
+#105's diagnostics, the 8K receiver from hardware diagnostics in #158) and the frames
+sopparus/hitscan-battery captured from the vendor application; the same rule picks
+its ff02:0002 collection.
 
 hidlist.enumerate() and hid.device() are replaced: the real ones ask Windows for
 collections of real devices.
@@ -55,6 +57,20 @@ HITSCAN_SHAPE = [
     (1, 0x000C, 0x0001),
     (1, 0x0001, 0x0080),
     (1, 0xFF02, 0x0002),
+    (2, 0x0001, 0x0002),
+]
+
+# the Hitscan Hyperlight 8K receiver (3770:0300) as its diagnostics list its collections
+HITSCAN_8K_SHAPE = [
+    (0, 0x0001, 0x0006),
+    (1, 0xFF05, 0x0000),
+    (1, 0xFF06, 0x0002),
+    (1, 0xFF03, 0x0000),
+    (1, 0x0001, 0x0002),
+    (1, 0x000C, 0x0001),
+    (1, 0x0001, 0x0080),
+    (1, 0xFF02, 0x0002),
+    (1, 0xFF04, 0x0002),
     (2, 0x0001, 0x0002),
 ]
 
@@ -345,6 +361,16 @@ class PulsarTest(unittest.TestCase):
         self.assertEqual("Hitscan Hyperlight (2.4 GHz)", found[0].name)
         self.assertEqual(100, found[0].level)
         self.assertEqual("pulsar:37700200", found[0].key)
+        self.assertEqual([(0xFF02, 0x0002)], bus.written())
+
+    def test_the_hitscan_8k_receiver_is_read(self):
+        bus = self.one_receiver(vid=0x3770, pid=0x0300, replies=[reply(85, 0, 4100)],
+                                shape=HITSCAN_8K_SHAPE)
+        found = P.PulsarProvider().poll()
+        self.assertEqual(1, len(found))
+        self.assertEqual("Hitscan Hyperlight (8K receiver)", found[0].name)
+        self.assertEqual(85, found[0].level)
+        self.assertEqual("pulsar:37700300", found[0].key)
         self.assertEqual([(0xFF02, 0x0002)], bus.written())
 
     def test_the_hitscan_on_its_cable_is_read(self):

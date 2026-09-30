@@ -31,7 +31,10 @@ the G-Wolves protocol; the level offsets here rest on the two sources above.)
 
 The Hitscan Hyperlight speaks the same frame, on the same kind of vendor collection
 (ff02:0002): sopparus/hitscan-battery mapped it from USBPcap captures of Hitscan Utility
-1.0.2 in both cable (3770:0100) and receiver (3770:0200) mode and reads it with a plain
+1.0.2 in both cable (3770:0100) and receiver (3770:0200) mode, and Hitscan Utility's
+own configuration (Wireless8_PID = MDMwMA== in Sys64/usersetting/Config.ini from
+hitscan.com/download) confirms the 8K receiver (3770:0300), verified on hardware in
+#158. It reads it with a plain
 write()/read(), command 0x04, the level in byte 6, the flag in byte 7, checksum 0x55 minus
 the sum. Its notes left byte 8 and byte 9 unresolved; across its captures those read
 0x1129 (4393 mV) while charging and 0x1073 (4211 mV) on battery - the big-endian millivolt
@@ -164,6 +167,7 @@ PIDS: Dict[int, Dict[int, str]] = {
         0x1085: "ATK VXE R1 SE+ (2.4 GHz)",
     },
     0x3770: {
+        0x0300: "Hitscan Hyperlight (8K receiver)",
         0x0200: "Hitscan Hyperlight (2.4 GHz)",
         0x0100: "Hitscan Hyperlight (wired)",
     },
